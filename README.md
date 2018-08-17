@@ -7,8 +7,9 @@ part that should be run on your mobile phone.
 ## Server
 Server part is coded in python3.5 and uses pipenv for dependency management.
 After installing pipenv and appropriate python version (if not supported on your
-system you can use pyenv) you can run app by running `pipenv run python main.py`
-in server folder. If you run command on remote computer (e.g. over ssh) remember
+system you can use pyenv) you can run `pipenv install` in server folder to
+install dependencies and then run the server with command `pipenv run python
+main.py` If you run command on remote computer (e.g. over ssh) remember
 to set `DISPLAY` variable for expected results, e.g. `DISPLAY=:0 pipenv run
 python main.py`.
 
