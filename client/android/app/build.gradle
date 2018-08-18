@@ -99,7 +99,7 @@ android {
 
     defaultConfig {
         applicationId "com.remote_control_client"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -138,7 +138,7 @@ android {
 
 configurations.all {
     resolutionStrategy {
-        force 'org.webkit:android-jsc:r224109'
+        force 'org.webkit:android-jsc:r216113'
     }
 }
 
