@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-# TODO: README, mention DISPALY=:0
 import asyncio
 import websockets
 import json
