@@ -8,6 +8,7 @@ import Xlib.XK
 from Xlib import X
 from Xlib.display import Display
 from Xlib.ext import xtest
+from argparse import ArgumentParser
 
 display = Display()
 logging.basicConfig(level=logging.INFO)
@@ -85,6 +86,7 @@ def process_message(message):
     else:
         raise Exception("Unknown event type")
 
+
 async def recieve_messages(websocket, path):
     # TODO: Handle exception when device disconnects.
     while True:
@@ -94,7 +96,13 @@ async def recieve_messages(websocket, path):
         except Exception as e:
             logging.error('Error:', e, '\nprocessing message:', message)
 
-start_server = websockets.serve(recieve_messages, '0.0.0.0', 5000)
+
+parser = ArgumentParser(description='Remote control server')
+parser.add_argument('--port', default=5000, type=int, help='Server port')
+parser.add_argument('--address', default='0.0.0.0', help='Server address')
+args = parser.parse_args()
+
+start_server = websockets.serve(recieve_messages, args.address, args.port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
