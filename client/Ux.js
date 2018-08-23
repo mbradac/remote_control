@@ -4,11 +4,12 @@ import {
   Button,
   StatusBar,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {
-  moderateScale as ms,
+  moderateScale,
 } from 'react-native-size-matters';
 
 const colors = {
@@ -16,6 +17,10 @@ const colors = {
   white: '#FFFFFF',
   near_black: '#1B2138',
   green: '#43BA9E',
+}
+
+function ms(size) {
+  return moderateScale(size, 0.4);
 }
 
 // TODO: Make these components pure.
@@ -87,6 +92,15 @@ class MyButton extends React.Component {
   }
 }
 export {MyButton as Button};
+
+// Expecting props:
+//  same props as official TextInput
+class MyTextInput extends React.Component {
+  render() {
+    return <TextInput {...this.props} style={{fontSize: ms(13)}}/>
+  }
+}
+export {MyTextInput as TextInput};
 
 // Expecting props:
 //  children

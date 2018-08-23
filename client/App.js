@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   AsyncStorage,
-  TextInput,
   View,
 } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
@@ -19,6 +18,7 @@ import {
   navigationStyle,
   StatusBar,
   Text,
+  TextInput,
 } from './Ux';
 import RemoteControl from './RemoteControl';
 
@@ -64,10 +64,7 @@ class SettingsScreen extends React.Component {
     return (
       <Card>
         <Text>
-          Enter uri in format address:port
-        </Text>
-        <Text>
-          eg. 192.168.100.100:5000
+          Enter uri in format address:port, e.g. 192.168.100.100:5000
         </Text>
         <TextInput onSubmitEditing={ ({nativeEvent}) => {
           settingsStore.saveUri(nativeEvent.text); }}
