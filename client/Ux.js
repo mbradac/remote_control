@@ -75,19 +75,19 @@ class MyButton extends React.Component {
   render() {
     // TODO: Is using moderateScaling (ms) in elevation property right?
     return (
-      <View elevation={ms(2)} style={{padding: ms(7),
-          backgroundColor: colors.green,
-          borderRadius: ms(5),
-          margin: ms(10)}}>
-        <TouchableOpacity onPress={this.props.onPress}>
-          <Text style={{color: colors.white,
-              fontWeight: 'bold',
-              fontSize: ms(14),
-              textAlign: 'center'}}>
-            {this.props.title}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={this.props.onPress} activeOpacity={0.5}>
+        <View elevation={ms(2)} style={{padding: ms(7),
+            backgroundColor: colors.green,
+            borderRadius: ms(5),
+            margin: ms(10)}}>
+            <Text style={{color: colors.white,
+                fontWeight: 'bold',
+                fontSize: ms(14),
+                textAlign: 'center'}}>
+              {this.props.title}
+            </Text>
+        </View>
+      </TouchableOpacity>
     );
   }
 }

@@ -63,6 +63,9 @@ def process_message(message):
         elif key_str == 'Backspace':
             key, modifier = display.keysym_to_keycode(
                     Xlib.XK.string_to_keysym('BackSpace')), 0
+        elif key_str == 'Tab':
+            key, modifier = display.keysym_to_keycode(
+                    Xlib.XK.string_to_keysym('Tab')), 0
         else:
             # key = display.keysym_to_keycode(Xlib.XK.string_to_keysym(key_str))
             keycodes = list(display.keysym_to_keycodes(ord(key_str)))

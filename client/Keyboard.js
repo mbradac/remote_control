@@ -42,23 +42,28 @@ export class MyKeyboard extends React.Component {
       // the keyboard.
       // TODO: Clear textinput so that it doesn't store too much chars.
       // TODO: Add shift, alt, ctrl, delete... buttons.
+      // TODO: Show entered text for a while.
       return (
-        <TextInput
-          style={{height: 0}}
-          underlineColorAndroid='white'
-          autoFocus={true}
-          onEndEditing={() => this.setState({showKeyboard: false})}
-          onSubmitEditing={() => this._processEvent({'key': 'Enter'})}
-          onKeyPress={({nativeEvent}) => this._processEvent(nativeEvent)}
-          autoCapitalize='none'
-          autoCorrect={false}
-          caretHidden={true}
-          blurOnSubmit={false}/>
+        <View>
+          <Button title='Tab'
+            onPress={() => this._processEvent({'key': 'Tab'})}/>
+          <TextInput
+            style={{height: 0}}
+            underlineColorAndroid='white'
+            autoFocus={true}
+            onEndEditing={() => this.setState({showKeyboard: false})}
+            onSubmitEditing={() => this._processEvent({'key': 'Enter'})}
+            onKeyPress={({nativeEvent}) => this._processEvent(nativeEvent)}
+            autoCapitalize='none'
+            autoCorrect={false}
+            caretHidden={true}
+            blurOnSubmit={false}/>
+        </View>
       );
     }
     return (
       <Button title='Keyboard'
-        onPress={() => { this.setState({showKeyboard: true}); }}/>
+        onPress={() => this.setState({showKeyboard: true})}/>
     );
   }
 }
