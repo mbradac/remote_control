@@ -43,10 +43,21 @@ export class MyKeyboard extends React.Component {
       // the keyboard.
       // TODO: Add shift, alt, ctrl, delete... buttons.
       // TODO: Show entered text for a while.
+      // TODO: Style buttons better.
       return (
         <View>
-          <Button title='Tab'
-            onPress={() => this._processEvent({'key': 'Tab'})}/>
+          <View style={{flexDirection: 'row'}}>
+            <Button title='Tab'
+              onPress={() => this._processEvent({'key': 'Tab'})}/>
+            <Button iconName='up'
+              onPress={() => this._processEvent({'key': 'Up'})}/>
+            <Button iconName='down'
+              onPress={() => this._processEvent({'key': 'Down'})}/>
+            <Button iconName='left'
+              onPress={() => this._processEvent({'key': 'Left'})}/>
+            <Button iconName='right'
+              onPress={() => this._processEvent({'key': 'Right'})}/>
+          </View>
           <TextInput
             ref={me => this.textInput = me}
             style={{height: 0}}

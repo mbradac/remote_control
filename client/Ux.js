@@ -11,6 +11,7 @@ import {
 import {
   moderateScale,
 } from 'react-native-size-matters';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const colors = {
   black: '#000000',
@@ -70,22 +71,39 @@ class MyText extends React.Component {
 export {MyText as Text};
 
 // Expecting props:
-//  title: string (button text)
+//  title: string (button text, either title or iconName should be specified)
+//  onPress: callback
+//  iconName: string (either title or iconName should be specified)
 class MyButton extends React.Component {
   render() {
-    // TODO: Is using moderateScaling (ms) in elevation property right?
+    // TODO: Is using moderateScaling (ms) in elevation property correct?
+    const iconName = this.props.iconName;
+    const title = this.props.title;
+    if ((iconName && title) || (!iconName && !title)) {
+      console.warn("Either iconName or title should be specified");
+    }
+    if (iconName) {
+      content = (
+        <Icon style={{textAlign: 'center'}}
+          name={this.props.iconName} size={20} color={colors.white}/>);
+    } else {
+      content = (
+        <Text style={{color: colors.white,
+            fontWeight: 'bold',
+            fontSize: ms(14),
+            textAlign: 'center'}}>
+          {this.props.title}
+        </Text>);
+    }
     return (
       <TouchableOpacity onPress={this.props.onPress} activeOpacity={0.5}>
         <View elevation={ms(2)} style={{padding: ms(7),
             backgroundColor: colors.green,
             borderRadius: ms(5),
-            margin: ms(10)}}>
-            <Text style={{color: colors.white,
-                fontWeight: 'bold',
-                fontSize: ms(14),
-                textAlign: 'center'}}>
-              {this.props.title}
-            </Text>
+            marginBottom: ms(10),
+            marginLeft: ms(10),
+            marginRight: ms(10)}}>
+          {content}
         </View>
       </TouchableOpacity>
     );
