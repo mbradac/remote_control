@@ -24,7 +24,7 @@ def process_message(message):
     parsed_message = json.loads(message)
     event_type = parsed_message['type']
     data = parsed_message['data']
-    logging.info('Got ' + event_type + ' event')
+    logging.info('Got ' + event_type + ' event ({})'.format(data))
     if event_type == 'LEFT_CLICK':
         xtest.fake_input(display, X.ButtonPress, LEFT_CLICK_BUTTON)
         xtest.fake_input(display, X.ButtonRelease, LEFT_CLICK_BUTTON)
@@ -105,6 +105,7 @@ parser.add_argument('--port', default=5000, type=int, help='Server port')
 parser.add_argument('--address', default='0.0.0.0', help='Server address')
 args = parser.parse_args()
 
+logging.info('Listening on {}:{}'.format(args.port, args.address))
 start_server = websockets.serve(recieve_messages, args.address, args.port)
 
 asyncio.get_event_loop().run_until_complete(start_server)

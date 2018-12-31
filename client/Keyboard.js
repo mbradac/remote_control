@@ -32,6 +32,7 @@ export class MyKeyboard extends React.Component {
   _processEvent(data) {
     type = 'KEYBOARD';
     this.props.onEvent({type, data});
+    this.textInput.clear();
   }
 
   render() {
@@ -40,7 +41,6 @@ export class MyKeyboard extends React.Component {
       // Make that configurable.
       // TODO: Handle multiletter events created by swiping whole word over
       // the keyboard.
-      // TODO: Clear textinput so that it doesn't store too much chars.
       // TODO: Add shift, alt, ctrl, delete... buttons.
       // TODO: Show entered text for a while.
       return (
@@ -48,6 +48,7 @@ export class MyKeyboard extends React.Component {
           <Button title='Tab'
             onPress={() => this._processEvent({'key': 'Tab'})}/>
           <TextInput
+            ref={me => this.textInput = me}
             style={{height: 0}}
             underlineColorAndroid='white'
             autoFocus={true}
