@@ -11,7 +11,7 @@ import {
 
 // Expecting props:
 //  onEvent: function ({type: string, data: map})
-export class MyKeyboard extends React.Component {
+class MyKeyboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,6 +44,9 @@ export class MyKeyboard extends React.Component {
       // TODO: Add shift, alt, ctrl, delete... buttons.
       // TODO: Show entered text for a while.
       // TODO: Style buttons better.
+      // TODO: contextMenuHidden does not appear to work, it is not a big
+      // problem since the height of the field is 0 so user shouldn't
+      // even be able to see the field.
       return (
         <View>
           <View style={{flexDirection: 'row'}}>
@@ -61,15 +64,18 @@ export class MyKeyboard extends React.Component {
           <TextInput
             ref={me => this.textInput = me}
             style={{height: 0}}
-            underlineColorAndroid='white'
             autoFocus={true}
             onEndEditing={() => this.setState({showKeyboard: false})}
             onSubmitEditing={() => this._processEvent({'key': 'Enter'})}
             onKeyPress={({nativeEvent}) => this._processEvent(nativeEvent)}
             autoCapitalize='none'
             autoCorrect={false}
+            blurOnSubmit={false}
             caretHidden={true}
-            blurOnSubmit={false}/>
+            contextMenuHidden={true}
+            disableFullscreenUI={true}
+            keyboardType='default'
+            underlineColorAndroid='white'/>
         </View>
       );
     }
