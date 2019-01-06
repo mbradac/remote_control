@@ -32,7 +32,6 @@ class MyKeyboard extends React.Component {
   _processEvent(data) {
     type = 'KEYBOARD';
     this.props.onEvent({type, data});
-    this.textInput.clear();
   }
 
   render() {
@@ -47,6 +46,16 @@ class MyKeyboard extends React.Component {
       // TODO: contextMenuHidden does not appear to work, it is not a big
       // problem since the height of the field is 0 so user shouldn't
       // even be able to see the field.
+
+      // Not all of the keys emit onKeyPress event (on all devices) so
+      // onChangeText event is used for tracking all of the key presses
+      // except Enter and Backspace. Those are handled by onSubmitEditing and
+      // onKeyPress.
+      onKeyPress = ({nativeEvent}) => {
+        if (nativeEvent.key == 'Backspace') {
+          this._processEvent(nativeEvent);
+        }
+      };
       return (
         <View>
           <View style={{flexDirection: 'row'}}>
@@ -62,20 +71,21 @@ class MyKeyboard extends React.Component {
               onPress={() => this._processEvent({'key': 'Right'})}/>
           </View>
           <TextInput
-            ref={me => this.textInput = me}
             style={{height: 0}}
             autoFocus={true}
             onEndEditing={() => this.setState({showKeyboard: false})}
             onSubmitEditing={() => this._processEvent({'key': 'Enter'})}
-            onKeyPress={({nativeEvent}) => this._processEvent(nativeEvent)}
+            onKeyPress={onKeyPress}
+            onChangeText={(text) => this._processEvent({'key': text})}
             autoCapitalize='none'
             autoCorrect={false}
             blurOnSubmit={false}
             caretHidden={true}
             contextMenuHidden={true}
             disableFullscreenUI={true}
-            keyboardType='default'
-            underlineColorAndroid='white'/>
+            keyboardType='visible-password'
+            underlineColorAndroid='white'
+            value=''/>
         </View>
       );
     }
