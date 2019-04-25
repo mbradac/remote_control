@@ -12,6 +12,9 @@ install dependencies and then run the server with command `pipenv run python
 main.py` If you run command on remote computer (e.g. over ssh) remember
 to set `DISPLAY` variable for expected results, e.g. `DISPLAY=:0 pipenv run
 python main.py`.
+If running server on Raspberry Pi you can encounter error message `No module
+'websockets'`. Error can be fixed by running `pipenv install --skip-lock`.
+You can read more about similar problem here: https://github.com/pypa/pipenv/issues/1191.
 
 ## Client
 Client app uses react native framework. You can build it and run it on your
