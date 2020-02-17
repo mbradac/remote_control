@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
 } from 'react-native';
+import { observer } from 'mobx-react/native';
 import {
   Card,
   Text,
@@ -11,7 +12,8 @@ import Touchpad from './Touchpad';
 import { Keyboard } from './Keyboard';
 
 // Expecting props:
-//  uri: string (format "address:port", eg. 192.168.100.150:5000)
+//  settingsStore: SettingStore object
+@observer
 export default class RemoteControl extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +25,7 @@ export default class RemoteControl extends React.Component {
   connect = () => {
     if (this.state.connected) return;
     try {
-      this.socket = new WebSocket('ws://' + this.props.uri);
+      this.socket = new WebSocket(this.props.settingsStore.uri);
     } catch (error) {
       alert('Error creating websocket: ' + error.message);
       console.log('Error creating websocket');
@@ -59,7 +61,7 @@ export default class RemoteControl extends React.Component {
     if (!this.state.connected) {
       return (
         <LoadingMessage>
-          <Text>Connecting to {this.props.uri}.</Text>
+          <Text>Connecting to {this.props.settingsStore.uri}...</Text>
           <Text>To change server URI press Settings.</Text>
         </LoadingMessage>
       );
@@ -71,9 +73,10 @@ export default class RemoteControl extends React.Component {
     return (
       <View style={{flex: 1}}>
         <Card>
-          <Text>Connected to {this.props.uri}.</Text>
+          <Text>Connected to {this.props.settingsStore.uri}.</Text>
         </Card>
-        <Touchpad onEvent={sendEvent}/>
+        <Touchpad onEvent={sendEvent}
+            sensitivity={this.props.settingsStore.sensitivity}/>
         <Keyboard onEvent={sendEvent}/>
       </View>
     );

@@ -8,6 +8,7 @@ import {
   action,
   configure,
   observable,
+  runInAction,
 } from 'mobx';
 import { observer } from 'mobx-react/native';
 import HelpScreen from './HelpScreen';
@@ -16,6 +17,7 @@ import {
   HeaderButton,
   LoadingMessage,
   navigationStyle,
+  Slider,
   StatusBar,
   Text,
   TextInput,
@@ -26,30 +28,54 @@ configure({
   enforceActions: 'strict',
 });
 
-class SettingsStore {
-  @observable isUriLoading = false;
-  @observable uri = null;
+function isWsUri(str) {
+  var pattern = new RegExp('^(wss?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return pattern.test(str);
+}
 
-  @action
-  loadUri() {
-    this.isUriLoading = true;
-    AsyncStorage.getItem('uri').then(action((uri) => {
-      this.uri = uri;
-      this.isUriLoading = false;
-    })).catch(action((error) => {
-      console.log('Error fetching \'uri\' from storage: ', error);
-      this.uri = null;
-      this.isUriLoading = false;
-    }));
+class SettingsStore {
+  @observable isLoaded = false;
+  // Never set following variables directly outside of this class. Use setter
+  // functions instead.
+  @observable uri = '';
+  @observable sensitivity = 0.5;
+
+  constructor() {
+    AsyncStorage.multiGet(['uri', 'sensitivity']).then((items) => {
+      uri = items[0][1];
+      if (uri !== null) {
+        runInAction(() => { this.uri = uri; });
+      }
+      sensitivity = parseFloat(items[1][1]);
+      if (sensitivity !== null) {
+        runInAction(() => { this.sensitivity = sensitivity; });
+      }
+    }).catch((error) => {
+      console.log('Error fetching from storage: ', error);
+    });
+    runInAction(() => { this.isLoaded = true; });
+  }
+
+  updateAsyncStore(key, value) {
+    AsyncStorage.setItem(key, value).catch((error) => {
+      console.log('Error saving ${key} to storage: ', error);
+    });
   }
 
   @action
-  saveUri(uri) {
-    this.uri = uri;
-    this.isUriLoading = false;
-    AsyncStorage.setItem('uri', uri).catch((error) => {
-      console.log('Error fetching \'uri\' from storage: ', error);
-    });
+  setUri(value) {
+    this.uri = value;
+    this.updateAsyncStore('uri', value);
+  }
+  @action
+  setSensitivity(value) {
+    this.sensitivity = value;
+    this.updateAsyncStore('sensitivity', value.toString());
   }
 }
 
@@ -62,14 +88,30 @@ class SettingsScreen extends React.Component {
   render() {
     settingsStore = this.props.screenProps.settingsStore;
     return (
+      <View>
       <Card>
         <Text>
-          Enter uri in format address:port, e.g. 192.168.100.100:5000
+          URI in format ws://address:port, e.g. ws://192.168.100.100:5000
         </Text>
         <TextInput onSubmitEditing={ ({nativeEvent}) => {
-          settingsStore.saveUri(nativeEvent.text); }}
-          defaultValue={settingsStore.uri}/>
+          // Websocket library crashes whole application if URI is not in
+          // correct format so this check is done here. This is probably fixed
+          // in newer version of react-native library.
+          if (isWsUri(nativeEvent.text)) {
+            settingsStore.setUri(nativeEvent.text);
+          } else {
+            alert("Invalid URI");
+          }
+        }} defaultValue={settingsStore.uri}/>
       </Card>
+      <Card>
+        <Text>
+          Touchpad sensitivity
+        </Text>
+        <Slider onValueChange={(x) => settingsStore.setSensitivity(x)}
+          value={settingsStore.sensitivity}/>
+      </Card>
+    </View>
     );
   }
 }
@@ -93,7 +135,8 @@ class MainScreen extends React.Component {
   }
 
   render() {
-    return <RemoteControl uri={this.props.screenProps.settingsStore.uri}/>;
+    settingsStore = this.props.screenProps.settingsStore;
+    return <RemoteControl settingsStore={settingsStore}/>;
   }
 }
 
@@ -103,22 +146,20 @@ export default class App extends React.Component {
     super(props);
     this.settingsStore = new SettingsStore();
   }
-  componentDidMount() {
-    this.settingsStore.loadUri();
-  }
 
   render() {
-    if (this.settingsStore.isUriLoading) {
+    if (!this.settingsStore.isLoaded) {
       return (
         <LoadingMessage>
           <Text>
-            Loading settings.
+            Loading settings...
           </Text>
         </LoadingMessage>
       );
-    } else if (this.settingsStore.uri === null) {
-    return <SettingsScreen
-      screenProps={{settingsStore: this.settingsStore}}/>
+    } else if (this.settingsStore.settings === {} ||
+               !isWsUri(this.settingsStore.uri)) {
+      return <SettingsScreen
+        screenProps={{settingsStore: this.settingsStore}}/>
     }
     const NavigationStack = createStackNavigator({
       main: {
@@ -140,6 +181,6 @@ export default class App extends React.Component {
         <NavigationStack
           screenProps={{settingsStore: this.settingsStore}}/>
       </View>
-      );
+    );
   }
 }

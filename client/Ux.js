@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Button,
+  Slider,
   StatusBar,
   Text,
   TextInput,
@@ -115,7 +116,10 @@ export {MyButton as Button};
 //  same props as official TextInput
 class MyTextInput extends React.Component {
   render() {
-    return <TextInput {...this.props} style={{fontSize: ms(13)}}/>
+    return (
+      <TextInput {...this.props} style={{fontSize: ms(13)}}
+          underlineColorAndroid={colors.green}/>
+    );
   }
 }
 export {MyTextInput as TextInput};
@@ -142,6 +146,18 @@ class MyStatusBar extends React.Component {
   }
 }
 export {MyStatusBar as StatusBar};
+
+// Expected props:
+//  same props as official Slider
+class MySlider extends React.Component {
+  render() {
+    return (
+      <Slider {...this.props} minimumTrackTintColor={colors.green}
+          thumbTintColor={colors.green}/>
+    );
+  }
+}
+export {MySlider as Slider};
 
 export const navigationStyle = {
   headerStyle: {

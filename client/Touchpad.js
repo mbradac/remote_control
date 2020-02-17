@@ -16,6 +16,7 @@ import {
 
 // Expecting props:
 //  onEvent: function ({type: string, data: map})
+//  sensitivity: float
 export default class Touchpad extends React.Component {
   _processEvent(type, data) {
     this.props.onEvent({type, data});
@@ -38,8 +39,8 @@ export default class Touchpad extends React.Component {
     const minDimension = Math.min(height, width);
     if (nativeEvent.state == State.ACTIVE) {
       this._processEvent('MOVE', {
-        velocityX: nativeEvent.velocityX / minDimension,
-        velocityY: nativeEvent.velocityY / minDimension,
+        velocityX: this.sensitivity * nativeEvent.velocityX / minDimension,
+        velocityY: this.sensitivity * nativeEvent.velocityY / minDimension,
       });
     }
   }
@@ -53,6 +54,14 @@ export default class Touchpad extends React.Component {
   }
 
   render() {
+    // x (this.props.sensitivity) is from 0 to 1.
+    // this.sensitivity is exponential function of x that produces values from
+    // 0.1 to 10.
+    x = this.props.sensitivity;
+    b = Math.log(0.1);
+    a = Math.log(10) - b;
+    this.sensitivity = Math.exp(x * a + b);
+
     return (
       // pointer move
       <PanGestureHandler onGestureEvent={this._handleMove}
