@@ -17,6 +17,8 @@ import {
   HeaderButton,
   LoadingMessage,
   navigationStyle,
+  Picker,
+  PickerItem,
   Slider,
   StatusBar,
   Text,
@@ -44,16 +46,19 @@ class SettingsStore {
   // functions instead.
   @observable uri = '';
   @observable sensitivity = 0.5;
+  @observable recentUris = [];
 
   constructor() {
-    AsyncStorage.multiGet(['uri', 'sensitivity']).then((items) => {
-      uri = items[0][1];
+    AsyncStorage.multiGet(['uri', 'sensitivity', 'recentUris']).then(
+        ([[, uri], [, sensitivity], [, recentUris]]) => {
       if (uri !== null) {
         runInAction(() => { this.uri = uri; });
       }
-      sensitivity = parseFloat(items[1][1]);
       if (sensitivity !== null) {
-        runInAction(() => { this.sensitivity = sensitivity; });
+        runInAction(() => { this.sensitivity = parseFloat(sensitivity); });
+      }
+      if (recentUris !== null) {
+        runInAction(() => { this.recentUris = JSON.parse(recentUris); });
       }
     }).catch((error) => {
       console.log('Error fetching from storage: ', error);
@@ -71,6 +76,17 @@ class SettingsStore {
   setUri(value) {
     this.uri = value;
     this.updateAsyncStore('uri', value);
+    position = this.recentUris.indexOf(value);
+    if (position != -1) {
+      this.recentUris.splice(position, 1);
+    }
+    if (this.recentUris.length >= 5) {
+      this.recentUris.pop();
+    }
+    // Since this.recentUris is observable we need to slice it before calling
+    // concat.
+    this.recentUris = [value].concat(this.recentUris.slice());
+    this.updateAsyncStore('recentUris', JSON.stringify(this.recentUris));
   }
   @action
   setSensitivity(value) {
@@ -87,11 +103,14 @@ class SettingsScreen extends React.Component {
 
   render() {
     settingsStore = this.props.screenProps.settingsStore;
+    pickerItemsRecentUris = settingsStore.recentUris.map((s, i) => {
+      return <PickerItem label={s} value={s}/>
+    });
     return (
       <View>
       <Card>
         <Text>
-          URI in format ws://address:port, e.g. ws://192.168.100.100:5000
+          Enter server URI in format ws://address:port (e.g. ws://192.168.100.100:5000)
         </Text>
         <TextInput onSubmitEditing={ ({nativeEvent}) => {
           // Websocket library crashes whole application if URI is not in
@@ -103,6 +122,16 @@ class SettingsScreen extends React.Component {
             alert("Invalid URI");
           }
         }} defaultValue={settingsStore.uri}/>
+        <Text>
+          Or choose URI from recent ones:
+        </Text>
+        <Picker
+            mode="dropdown"
+            onValueChange={(itemValue, itemIndex) =>
+              settingsStore.setUri(itemValue)
+            }>
+          {pickerItemsRecentUris}
+        </Picker>
       </Card>
       <Card>
         <Text>

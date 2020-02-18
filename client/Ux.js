@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Button,
+  Picker,
   Slider,
   StatusBar,
   Text,
@@ -156,6 +157,34 @@ class MySlider extends React.Component {
   }
 }
 export {MySlider as Slider};
+
+
+// TODO: find a way to style items on android, probably by finding
+// library with custom picker or picker items.
+// Otherwise, remove MyPicker and PickerItem classes.
+//
+// Expected props:
+//  same props as official Picker
+class MyPicker extends React.Component {
+  render() {
+    return (
+      <Picker {...this.props} itemStyle={{fontSize: ms(13)}}>
+        {this.props.children}
+      </Picker>
+    );
+  }
+}
+export {MyPicker as Picker};
+
+// Expected props:
+//  same props as official Picker.Item
+export class PickerItem extends React.Component {
+  render() {
+    return (
+      <Picker.Item {...this.props} />
+    );
+  }
+}
 
 export const navigationStyle = {
   headerStyle: {
