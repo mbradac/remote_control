@@ -25,8 +25,6 @@ function ms(size) {
   return moderateScale(size, 0.4);
 }
 
-// TODO: Make these components pure.
-
 // Expecting props:
 //  title: string (button text)
 //  onPress: function (button press callback)
