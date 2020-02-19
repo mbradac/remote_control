@@ -18,6 +18,11 @@ import {
 //  onEvent: function ({type: string, data: map})
 //  sensitivity: float
 export default class Touchpad extends React.Component {
+  constructor(props) {
+    super(props);
+    this.cumulativeScrollVelocity = 0;
+  }
+
   _processEvent(type, data) {
     this.props.onEvent({type, data});
   }
@@ -45,11 +50,28 @@ export default class Touchpad extends React.Component {
     }
   }
 
+  _handleScrollHandlerStateChange = ({nativeEvent}) => {
+    if (nativeEvent.state != State.ACTIVE) {
+      this.cumulativeScrollVelocity = 0;
+    }
+  }
+
   _handleScroll = ({nativeEvent}) => {
     if (nativeEvent.state == State.ACTIVE) {
-      this._processEvent('SCROLL', {
-        direction: nativeEvent.velocityY < 0 ? 'UP' : 'DOWN',
-      });
+      velocity = nativeEvent.velocityY;
+      direction =  Math.sign(velocity);
+      if (direction != Math.sign(this.cumulativeScrollVelocity)) {
+        this.cumulativeScrollVelocity = 0;
+      }
+      this.cumulativeScrollVelocity += velocity;
+      T = 400;
+      cntScrolls = Math.floor(Math.abs(this.cumulativeScrollVelocity) / T);
+      this.cumulativeScrollVelocity -= direction * cntScrolls * T;
+      for (i = 0; i < cntScrolls; ++i) {
+        this._processEvent('SCROLL', {
+          direction: direction < 0 ? 'UP' : 'DOWN',
+        });
+      }
     }
   }
 
@@ -68,6 +90,7 @@ export default class Touchpad extends React.Component {
             minPointers={1} maxPointers={1}>
         {/* scroll */}
         <PanGestureHandler onGestureEvent={this._handleScroll}
+              onHandlerStateChange={this._handleScrollHandlerStateChange}
               minPointers={2} maxPointers={2}>
           {/* left click */}
           <TapGestureHandler onHandlerStateChange={this._handleLeftClick}>
