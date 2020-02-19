@@ -39,16 +39,12 @@ def process_message(message):
         pointer = display.screen().root.query_pointer()
         geometry = display.screen().root.get_geometry()
         min_dimension = min(geometry.width, geometry.height)
-        # TODO: Make scale configurable on client.
-        # TODO: Maybe linear function is not the best. Exponential could work
-        # better.
         scale = 0.05
         new_x = pointer.root_x + int(velocity_x * min_dimension * scale)
         new_y = pointer.root_y + int(velocity_y * min_dimension * scale)
         xtest.fake_input(display, X.MotionNotify, x=new_x, y=new_y)
         display.sync()
     elif event_type == 'SCROLL':
-        # TODO: Make it less sesitive.
         button = SCROLL_DIRECTION_TO_BUTTON[data['direction']]
         xtest.fake_input(display, X.ButtonPress, button)
         xtest.fake_input(display, X.ButtonRelease, button)
