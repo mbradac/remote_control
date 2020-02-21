@@ -25,6 +25,7 @@ import {
   TextInput,
 } from './Ux';
 import RemoteControl from './RemoteControl';
+import WebSocketStore from './WebSocketStore';
 
 configure({
   enforceActions: 'strict',
@@ -113,7 +114,7 @@ class SettingsScreen extends React.Component {
           Enter server URI in format ws://address:port (e.g. ws://192.168.100.100:5000)
         </Text>
         <TextInput onSubmitEditing={ ({nativeEvent}) => {
-          // Websocket library crashes whole application if URI is not in
+          // WebSocket library crashes whole application if URI is not in
           // correct format so this check is done here. This is probably fixed
           // in newer version of react-native library.
           if (isWsUri(nativeEvent.text)) {
@@ -165,7 +166,11 @@ class MainScreen extends React.Component {
 
   render() {
     settingsStore = this.props.screenProps.settingsStore;
-    return <RemoteControl settingsStore={settingsStore}/>;
+    webSocketStore = this.props.screenProps.webSocketStore;
+    return (
+      <RemoteControl settingsStore={settingsStore}
+        webSocketStore={webSocketStore}/>
+    );
   }
 }
 
@@ -174,6 +179,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.settingsStore = new SettingsStore();
+    this.webSocketStore = new WebSocketStore();
   }
 
   render() {
@@ -187,8 +193,10 @@ export default class App extends React.Component {
       );
     } else if (this.settingsStore.settings === {} ||
                !isWsUri(this.settingsStore.uri)) {
-      return <SettingsScreen
-        screenProps={{settingsStore: this.settingsStore}}/>
+      return (
+        <SettingsScreen screenProps={{settingsStore: this.settingsStore,
+          webSocketStore: this.webSocketStore}}/>
+      );
     }
     const NavigationStack = createStackNavigator({
       main: {
@@ -208,7 +216,8 @@ export default class App extends React.Component {
       <View style={{flex: 1}}>
         <StatusBar/>
         <NavigationStack
-          screenProps={{settingsStore: this.settingsStore}}/>
+          screenProps={{settingsStore: this.settingsStore,
+            webSocketStore: this.webSocketStore}}/>
       </View>
     );
   }
