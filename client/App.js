@@ -105,7 +105,7 @@ class SettingsScreen extends React.Component {
   render() {
     settingsStore = this.props.screenProps.settingsStore;
     pickerItemsRecentUris = settingsStore.recentUris.map((s, i) => {
-      return <PickerItem label={s} value={s}/>
+      return <PickerItem key={i} label={s} value={s}/>
     });
     return (
       <View>
