@@ -10,14 +10,34 @@ import {
 } from './Ux';
 import Touchpad from './Touchpad';
 import { Keyboard } from './Keyboard';
+import Orientation from 'react-native-orientation';
 
 // Expecting props:
 //  settingsStore: SettingStore object
 //  webSocketStore: WebSocketStore object
 @observer
 export default class RemoteControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      orientation: null,
+    }
+  }
+
+  componentDidMount() {
+    this.setState({orientation: Orientation.getInitialOrientation()});
+    Orientation.addOrientationListener(this._orientationListener);
+  }
+
   componentWillUnmount() {
     this.props.webSocketStore.disconnect();
+    Orientation.removeOrientationListener(this._orientationListener);
+  }
+
+  _orientationListener = (orientation) => {
+    console.log("promijena");
+    console.log(orientation);
+    this.setState({orientation: orientation});
   }
 
   render() {
@@ -34,11 +54,18 @@ export default class RemoteControl extends React.Component {
       console.log('New event: ', event.type, event.data);
       this.props.webSocketStore.send(JSON.stringify(event));
     };
-    return (
-      <View style={{flex: 1}}>
+    if (this.state.orientation == 'LANDSCAPE') {
+      text = null;
+    } else {
+      text = (
         <Card>
           <Text>Connected to {this.props.settingsStore.uri}.</Text>
         </Card>
+      );
+    }
+    return (
+      <View style={{flex: 1}}>
+        {text}
         <Touchpad onEvent={sendEvent}
             sensitivity={this.props.settingsStore.sensitivity}/>
         <Keyboard onEvent={sendEvent}/>

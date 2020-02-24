@@ -20,6 +20,7 @@ const colors = {
   white: '#FFFFFF',
   near_black: '#1B2138',
   green: '#43BA9E',
+  purple: '#934E80',
 }
 
 function ms(size) {
@@ -74,6 +75,7 @@ export {MyText as Text};
 //  title: string (button text, either title or iconName should be specified)
 //  onPress: callback
 //  iconName: string (either title or iconName should be specified)
+//  color: background color
 class MyButton extends React.Component {
   render() {
     // TODO: Is using moderateScaling (ms) in elevation property correct?
@@ -98,18 +100,30 @@ class MyButton extends React.Component {
     return (
       <TouchableOpacity onPress={this.props.onPress} activeOpacity={0.5}>
         <View elevation={ms(2)} style={{padding: ms(7),
-            backgroundColor: colors.green,
+            backgroundColor: this.props.color,
             borderRadius: ms(5),
             marginBottom: ms(10),
-            marginLeft: ms(10),
-            marginRight: ms(10)}}>
+            marginLeft: ms(3),
+            marginRight: ms(3)}}>
           {content}
         </View>
       </TouchableOpacity>
     );
   }
 }
-export {MyButton as Button};
+
+// Same as MyButton except color.
+export class GreenButton extends React.Component {
+  render() {
+    return <MyButton {...this.props} color={colors.green}/>
+  }
+}
+// Same as MyButton except color.
+export class PurpleButton extends React.Component {
+  render() {
+    return <MyButton {...this.props} color={colors.purple}/>
+  }
+}
 
 // Expecting props:
 //  same props as official TextInput
