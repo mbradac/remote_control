@@ -75,7 +75,8 @@ export {MyText as Text};
 //  title: string (button text, either title or iconName should be specified)
 //  onPress: callback
 //  iconName: string (either title or iconName should be specified)
-//  color: background color
+//  color: string (background color)
+//  pressed: boolean (used for styling toggleable buttons)
 class MyButton extends React.Component {
   render() {
     // TODO: Is using moderateScaling (ms) in elevation property correct?
@@ -97,14 +98,20 @@ class MyButton extends React.Component {
           {this.props.title}
         </Text>);
     }
+    if (this.props.pressed) {
+      viewOpacity = 0.5;
+    } else {
+      viewOpacity = 1.0;
+    }
     return (
       <TouchableOpacity onPress={this.props.onPress} activeOpacity={0.5}>
         <View elevation={ms(2)} style={{padding: ms(7),
             backgroundColor: this.props.color,
             borderRadius: ms(5),
             marginBottom: ms(10),
-            marginLeft: ms(3),
-            marginRight: ms(3)}}>
+            marginLeft: ms(4),
+            marginRight: ms(4),
+            opacity: viewOpacity}}>
           {content}
         </View>
       </TouchableOpacity>
@@ -122,6 +129,12 @@ export class GreenButton extends React.Component {
 export class PurpleButton extends React.Component {
   render() {
     return <MyButton {...this.props} color={colors.purple}/>
+  }
+}
+// Same as MyButton except color.
+export class ToggleableGreenButton extends React.Component {
+  render() {
+    return <MyButton {...this.props} color={colors.green}/>
   }
 }
 

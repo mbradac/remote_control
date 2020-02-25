@@ -92,18 +92,26 @@ def process_message(message):
                 logging.warn('Can not convert `' + key_str + '` to keycode')
                 return
             key, modifier = keycodes[0]
-        if modifier == 0:
-            xtest.fake_input(display, X.KeyPress, key)
-            xtest.fake_input(display, X.KeyRelease, key)
-        elif modifier == 1:
-            shift_l_key = display.keysym_to_keycode(Xlib.XK.XK_Shift_L)
-            xtest.fake_input(display, X.KeyPress, shift_l_key)
-            xtest.fake_input(display, X.KeyPress, key)
-            xtest.fake_input(display, X.KeyRelease, key)
-            xtest.fake_input(display, X.KeyRelease, shift_l_key)
-        else:
+        if modifier != 0 and modifier != 1:
             logging.warn('Unknown modifier', modifier)
             return
+        modifiers = [
+                (modifier, Xlib.XK.XK_Shift_L),
+                (data['ctrl'], Xlib.XK.XK_Control_L),
+                (data['alt'], Xlib.XK.XK_Alt_L),
+                (data['altGr'], Xlib.XK.XK_Alt_R),
+                (data['super'], Xlib.XK.XK_Super_L),
+        ];
+        for flag, keysym in modifiers:
+            if flag:
+                keycode = display.keysym_to_keycode(keysym)
+                xtest.fake_input(display, X.KeyPress, keycode)
+        xtest.fake_input(display, X.KeyPress, key)
+        xtest.fake_input(display, X.KeyRelease, key)
+        for flag, keysym in reversed(modifiers):
+            if flag:
+                keycode = display.keysym_to_keycode(keysym)
+                xtest.fake_input(display, X.KeyRelease, keycode)
         display.sync()
     else:
         raise Exception("Unknown event type")

@@ -18,6 +18,10 @@ class MyKeyboard extends React.Component {
     this.state = {
       showKeyboard: false,
       buttonsPage: 0,
+      ctrlDown: false,
+      altDown: false,
+      altGrDown: false,
+      superDown: false,
     }
   }
 
@@ -33,6 +37,12 @@ class MyKeyboard extends React.Component {
 
   _processEvent(data) {
     type = 'KEYBOARD';
+    data['ctrl'] = this.state.ctrlDown;
+    data['alt'] = this.state.altDown;
+    data['altGr'] = this.state.altGrDown;
+    data['super'] = this.state.superDown;
+    this.setState({ctrlDown: false, altDown: false,
+        altGrDown: false, superDown: false});
     this.props.onEvent({type, data});
   }
 
@@ -48,7 +58,6 @@ class MyKeyboard extends React.Component {
     // Make that configurable.
     // TODO: Handle multiletter events created by swiping whole word over
     // the keyboard.
-    // TODO: Add shift, alt, ctrl, delete... buttons.
     // TODO: Show entered text for a while.
     // TODO: Style buttons better.
     // TODO: Fix non ASCII keyboard chars or at list show message to user.
@@ -65,13 +74,23 @@ class MyKeyboard extends React.Component {
         this._processEvent(nativeEvent);
       }
     };
+
     upperRowButtons = (
       <View style={{flexDirection: 'row'}}>
+        <GreenButton title='Ctrl' pressed={this.state.ctrlDown}
+          onPress={() => this.setState({ctrlDown: !this.state.ctrlDown})}/>
+        <GreenButton title='Super' pressed={this.state.superDown}
+          onPress={() => this.setState({superDown: !this.state.superDown})}/>
+        <GreenButton title='Alt' pressed={this.state.altDown}
+          onPress={() => this.setState({altDown: !this.state.altDown})}/>
+        <GreenButton title='AltGr' pressed={this.state.altGrDown}
+          onPress={() => this.setState({altGrDown: !this.state.altGrDown})}/>
         <PurpleButton title='More'
           onPress={() => this.setState(
             {buttonsPage: (this.state.buttonsPage + 1) % 4})}/>
       </View>
     );
+
     if (this.state.buttonsPage == 0) {
       buttons = (
         <View>
@@ -99,7 +118,7 @@ class MyKeyboard extends React.Component {
           <View style={{flexDirection: 'row'}}>
             <GreenButton title='Ins'
               onPress={() => this._processEvent({'key': 'Insert'})}/>
-            <GreenButton title='PrntScr'
+            <GreenButton title='Prnt'
               onPress={() => this._processEvent({'key': 'PrintScreen'})}/>
             <GreenButton title='Del'
               onPress={() => this._processEvent({'key': 'Delete'})}/>
