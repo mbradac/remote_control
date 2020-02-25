@@ -4,6 +4,7 @@ import {
   Text,
 } from './Ux';
 
+// TODO: document modifier keys
 export default class HelpScreen extends React.Component {
   static navigationOptions = {
     title: 'Help',

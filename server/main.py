@@ -102,6 +102,7 @@ def process_message(message):
                 (data['altGr'], Xlib.XK.XK_Alt_R),
                 (data['super'], Xlib.XK.XK_Super_L),
         ];
+        # TODO: alt + tab does not seem to work as expected
         for flag, keysym in modifiers:
             if flag:
                 keycode = display.keysym_to_keycode(keysym)
